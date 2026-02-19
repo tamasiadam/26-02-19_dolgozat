@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="file" name="fileinput" id="fileinput" onchange="olvas(this)">
+</body>
+
+<script>
+        function olvas(mit) {
+                let file = mit.files[0];
+                let olvaso = new FileReader();
+
+                olvaso.readAsText(file);
+
+                olvaso.onload = function () {
+                    let tartalom = olvaso.result;
+                    console.log(tartalom);
+
+                    class Jelolt {
+                        constructor(korzet, szavazatok, vezeteknev, utonev, part) {
+                            this.korzet = korzet;
+                            this.szavazatok = szavazatok;
+                            this.vezeteknev = vezeteknev;
+                            this.utonev = utonev;
+                            this.part = part;
+                        }
+                    }
+
+                    let jeloltek = [];
+                    let fuggetlen = [];
+                    let zep_szavazok = 0;
+                    let egyes_korzet = [];
+
+                    let sorok = tartalom.split("\r\n");
+                    let partok = [];
+                    for (let i = 0; i < sorok.length; i++) {
+                        let darabok = sorok[i].split(" ");
+                        let j = new Jelolt(parseInt(darabok[0]), parseInt(darabok[1]), darabok[2], darabok[3], darabok[4]);
+                        jeloltek.push(j);
+
+                        if (j.part == "-")
+                        {
+                            j.part = "független";
+                        }
+
+                        partok.push(j.part);
+
+                        if (j.part == "ZEP") {
+                            zep_szavazok += j.szavazatok;
+                        }
+
+
+                        if (j.korzet == 1) {
+                            egyes_korzet.push(j.szavazatok);
+                        }
+
+
+
+
+                    }
+
+                    let partok_szama = new Set(partok);
+                    let partok_szama_szam = [...partok_szama];
+                    
+                    let legnagyobb_egyes_korzet = Math.max(...egyes_korzet);
+
+
+                    /*
+
+                    */
+                    console.log("Jelöltek száma: " + jeloltek.length);
+                    console.log("ZEP szavazók száma: " + zep_szavazok);
+                    console.log("1-es körzet legtöbb szavazatot kapott jelöltje: Petrezselyem Petra " + legnagyobb_egyes_korzet + " szavazat");
+                    console.log("Jelöltek száma pártonként:");
+                    for (let i = 0; i < partok_szama_szam.length; i++) {
+                        let szamlalo = 0;
+                        for (let j = 0; j < jeloltek.length; j++) {
+                            if (partok_szama_szam[i] == jeloltek[j].part) {
+                                szamlalo++;
+                            }
+                        }
+                        console.log(partok_szama_szam[i] + ": " + szamlalo);
+                    }
+                    
+                    document.write("Független jelöltjeink: <br>");
+                    for (let i = 0; i < jeloltek.length; i++) 
+                    {
+                        if (jeloltek[i].part == "független")
+                        {
+                            document.write(jeloltek[i].vezeteknev + " " + jeloltek[i].utonev + " " + jeloltek[i].szavazatok + " szavazat, ");
+                            document.write("<br>");
+                        }
+                    }
+                    
+                }
+            }
+</script>
+</html>
